@@ -111,7 +111,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 }
                 else if (!isBuiltinRenderPipeline && srpShader != null && currentShader != srpShader)
                 {
-                    info.material.shader = srpShader;
+                    info.material.shader = srpShader;               
                     MarkMaterialModified(info.material);
                 }
             }
