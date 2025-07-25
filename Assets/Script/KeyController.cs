@@ -14,6 +14,7 @@ public class KeyController : MonoBehaviour
 
     void Start()
     {
+        targetLock = FindAnyObjectByType<LockController>();
         grabInteractable = GetComponent<XRGrabInteractable>();
         rb = GetComponent<Rigidbody>();
         originalParent = transform.parent;

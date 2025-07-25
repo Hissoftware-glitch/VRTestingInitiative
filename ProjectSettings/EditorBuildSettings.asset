@@ -6,14 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/scenes for game/hub.unity
+    path: Assets/Scenes/Hub.unity
     guid: 91e2bb8a6f0a51b44b865d30cb47840e
   - enabled: 1
-    path: Assets/scenes for game/PortalRoom.unity
-    guid: 2cd075295cabe004da19bd2c4c6f9f66
+    path: Assets/Scenes/Level1.unity
+    guid: a7f61421107be8e4fb483cc891821329
   - enabled: 1
-    path: Assets/scenes for game/Graviiroom.unity
-    guid: 86f7a2453d4dcfb4db1d589b0d39ece2
+    path: Assets/Scenes/Level2.unity
+    guid: ea0b1f90edcfdc140838bbc540f9e42f
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260, type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: dc5a169419fa04987b057f65238cf3ba, type: 2}
