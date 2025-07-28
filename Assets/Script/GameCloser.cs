@@ -16,45 +16,51 @@ public class GameCloserAfterVideo : MonoBehaviour
     [SerializeField] public string messageTitle = "ОШИБКА 0xE3A7B";
     [SerializeField] public string messageContent = " Нарушение целостности данных \nДоступ к следующей тестовой камере заблокирован.\nОбнаружены признаки вмешательства в систему...\nПРИЧИНА: Несанкционированный доступ к протоколам\nДЕЙСТВИЕ: Инициирование протокола изоляции\nПриложение будет немедленно закрыто.";
 
-    // Импорты WinAPI для системных сообщений
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern IntPtr MessageBox(IntPtr hWnd, string text, string caption, uint type);
+
+    private bool videoFinished = false;
 
     void Start()
     {
         if (videoPlayer == null)
         {
-            videoPlayer = FindAnyObjectByType<VideoPlayer>();
+            videoPlayer = GetComponent<VideoPlayer>();
             if (videoPlayer == null)
             {
-                Debug.LogError("GameCloser: No VideoPlayer found in scene!");
+                Debug.LogError("GameCloser: No VideoPlayer component found!");
                 return;
             }
         }
 
-        // Назначаем видео и начинаем воспроизведение
+        // Убедимся, что видео не зациклено
+        videoPlayer.isLooping = false;
         videoPlayer.clip = closingVideoClip;
+
+        // Подписываемся на событие завершения видео
         videoPlayer.loopPointReached += OnVideoEnd;
+
+        // Начинаем воспроизведение
         videoPlayer.Play();
+        Debug.Log("Video playback started");
     }
 
     private void OnVideoEnd(VideoPlayer source)
     {
+        Debug.Log("Video finished playing");
+        videoFinished = true;
         StartCoroutine(CloseGameRoutine());
     }
 
     private IEnumerator CloseGameRoutine()
     {
-        // Задержка после видео
+        // Ждем указанную задержку после видео
         yield return new WaitForSeconds(delayAfterVideo);
 
-        // Показ системного сообщения
-        if (showSystemMessage)
+        if (showSystemMessage && videoFinished)
         {
+            Debug.Log("Showing system message");
             ShowSystemMessage();
-
-            // Даем время на прочтение сообщения
-            yield return new WaitForSeconds(5f);
         }
 
         QuitGame();
@@ -64,17 +70,18 @@ public class GameCloserAfterVideo : MonoBehaviour
     {
         try
         {
-            // Показываем системное окно сообщения
-            MessageBox(IntPtr.Zero, messageContent, messageTitle, 0);
+            // Отображаем сообщение перед выходом
+            MessageBox(IntPtr.Zero, messageContent, messageTitle, 0x1000); // 0x1000 = MB_SYSTEMMODAL
         }
         catch (Exception e)
         {
-            Debug.LogWarning("Failed to show system message: " + e.Message);
+            Debug.LogError("System message error: " + e.Message);
         }
     }
 
     private void QuitGame()
     {
+        Debug.Log("Quitting application...");
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -84,7 +91,7 @@ public class GameCloserAfterVideo : MonoBehaviour
 
     void OnDestroy()
     {
-        // Отписываемся от события
+        // Отписываемся от события при уничтожении объекта
         if (videoPlayer != null)
         {
             videoPlayer.loopPointReached -= OnVideoEnd;
